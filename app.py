@@ -8,6 +8,7 @@ st.set_page_config(
 )
 
 st.title("AI DevOps Incident Assistant")
+st.success("GitHub Actions demo: this text was added locally and pushed through CI/CD.")
 st.write("Practical demo: AI-assisted DevOps incident analysis using logs and server health.")
 
 st.divider()
