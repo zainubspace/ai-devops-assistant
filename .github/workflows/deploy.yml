@@ -14,27 +14,24 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build / Compile demo
-        shell: powershell
+        shell: cmd
         run: |
-          Write-Host "Build step started..."
-          if (!(Test-Path "build")) {
-            New-Item -ItemType Directory -Path "build" | Out-Null
-          }
-          Copy-Item "demo-log.txt" "build\demo-log.txt" -Force
-          Write-Host "Build step completed."
+          echo Build step started...
+          if not exist build mkdir build
+          copy /Y demo-log.txt build\demo-log.txt
+          echo Build step completed.
 
       - name: Add configuration
-        shell: powershell
+        shell: cmd
         run: |
-          "environment=demo" | Out-File -Encoding utf8 "build\config.txt"
-          Write-Host "Configuration file created."
+          echo environment=demo> build\config.txt
+          echo Configuration file created.
 
       - name: Deploy to fake server folder
-        shell: powershell
+        shell: cmd
         run: |
-          $deployPath = "D:\fake-server"
-          if (!(Test-Path $deployPath)) {
-            New-Item -ItemType Directory -Path $deployPath | Out-Null
-          }
-          Copy-Item "build\*" $deployPath -Recurse -Force
-          Write-Host "Files deployed to D:\fake-server"
+          if not exist D:\fake-server mkdir D:\fake-server
+          copy /Y build\demo-log.txt D:\fake-server\demo-log.txt
+          copy /Y build\config.txt D:\fake-server\config.txt
+          dir D:\fake-server
+          echo Files deployed to D:\fake-server
