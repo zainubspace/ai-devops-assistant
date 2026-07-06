@@ -1,4 +1,4 @@
-name: Demo Deploy to D Folder
+name: Docker Demo Deploy
 
 on:
   push:
@@ -6,32 +6,29 @@ on:
       - main
 
 jobs:
-  build-config-deploy:
+  docker-demo:
     runs-on: self-hosted
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build / Compile demo
+      - name: Build Docker image
         shell: cmd
-        run: |
-          echo Build step started...
-          if not exist build mkdir build
-          copy /Y demo-log.txt build\demo-log.txt
-          echo Build step completed.
+        run: docker build -t ai-devops-assistant .
 
-      - name: Add configuration
+      - name: Stop old container if exists
         shell: cmd
-        run: |
-          echo environment=demo> build\config.txt
-          echo Configuration file created.
+        run: docker stop ai-devops-container || echo No old container running
 
-      - name: Deploy to fake server folder
+      - name: Remove old container if exists
         shell: cmd
-        run: |
-          if not exist D:\fake-server mkdir D:\fake-server
-          copy /Y build\demo-log.txt D:\fake-server\demo-log.txt
-          copy /Y build\config.txt D:\fake-server\config.txt
-          dir D:\fake-server
-          echo Files deployed to D:\fake-server
+        run: docker rm ai-devops-container || echo No old container to remove
+
+      - name: Run new Docker container
+        shell: cmd
+        run: docker run -d --name ai-devops-container -p 8501:8501 ai-devops-assistant
+
+      - name: Show running containers
+        shell: cmd
+        run: docker ps
