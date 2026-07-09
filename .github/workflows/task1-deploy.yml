@@ -1,0 +1,78 @@
+name: Task 1 - Deploy Files to Machine B
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "deployment-files/**"
+      - ".github/workflows/task1-deploy.yml"
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Machine B
+
+    runs-on:
+      - self-hosted
+      - Windows
+      - X64
+
+    steps:
+      - name: Download latest code from GitHub
+        uses: actions/checkout@v4
+
+      - name: Validate deployment files
+        shell: cmd
+        run: |
+          echo Checking deployment files...
+
+          if not exist "deployment-files\app-message.txt" (
+            echo ERROR: app-message.txt does not exist.
+            exit /b 1
+          )
+
+          if not exist "deployment-files\version.txt" (
+            echo ERROR: version.txt does not exist.
+            exit /b 1
+          )
+
+          echo All required files exist.
+
+      - name: Create Machine B application folder
+        shell: cmd
+        run: |
+          if not exist "D:\fake-server" mkdir "D:\fake-server"
+          if not exist "D:\fake-server\task1-app" mkdir "D:\fake-server\task1-app"
+
+      - name: Deploy files to Machine B
+        shell: cmd
+        run: |
+          echo Copying files to Machine B...
+
+          xcopy "deployment-files\*" "D:\fake-server\task1-app\" /E /I /Y
+
+          if errorlevel 1 (
+            echo ERROR: Deployment failed.
+            exit /b 1
+          )
+
+          echo Deployment completed successfully.
+
+      - name: Verify deployed files
+        shell: cmd
+        run: |
+          echo ========================================
+          echo APPLICATION MESSAGE
+          echo ========================================
+          type "D:\fake-server\task1-app\app-message.txt"
+
+          echo.
+          echo ========================================
+          echo APPLICATION VERSION
+          echo ========================================
+          type "D:\fake-server\task1-app\version.txt"
+
+          echo.
+          echo Deployment verification successful.
