@@ -8,7 +8,7 @@ st.set_page_config(
 )
 
 st.title("AI DevOps Incident Assistant")
-st.success("Docker CI/CD demo: app updated, pushed to GitHub, and deployed by GitHub Actions.")
+st.success("Docker CI/CD demo: app updateddd, pushed to GitHub, and deployed by GitHub Actions.")
 st.write("Practical demo: AI-assisted DevOps incident analysis using logs and server health.")
 
 st.divider()

@@ -1,4 +1,40 @@
-venv/
-__pycache__/
-*.pyc
-.streamlit/
+name: Demo Deploy to Folder
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-config-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build / Compile demo
+        shell: powershell
+        run: |
+          Write-Host "Build step started..."
+          if (!(Test-Path "build")) {
+            New-Item -ItemType Directory -Path "build" | Out-Null
+          }
+          Copy-Item "index.txt" "build\index.txt" -Force
+          Write-Host "Build step completed."
+
+      - name: Add configuration
+        shell: powershell
+        run: |
+          "environment=demo" | Out-File -Encoding utf8 "build\config.txt"
+          Write-Host "Configuration file created."
+
+      - name: Deploy to fake server folder
+        shell: powershell
+        run: |
+          $deployPath = "D:\fake-server"
+          if (!(Test-Path $deployPath)) {
+            New-Item -ItemType Directory -Path $deployPath | Out-Null
+          }
+          Copy-Item "build\*" $deployPath -Recurse -Force
+          Write-Host "Files deployed to D:\fake-server"
